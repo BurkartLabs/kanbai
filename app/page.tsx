@@ -1,65 +1,134 @@
-import Image from "next/image";
+import { ProgressCardLink } from '@/components/ProgressCardLink';
+import { getBoardSummaries, type BoardSummary } from '@/lib/projects';
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+function DistBar({ todo, active, done }: { todo: number; active: number; done: number }) {
+  const total = todo + active + done;
+  const pct = (n: number) => `${total === 0 ? 0 : (n / total) * 100}%`;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <>
+      <div className="dist-bar">
+        <span style={{ width: pct(todo), background: 'var(--backlog)' }} />
+        <span style={{ width: pct(active), background: 'var(--indigo)' }} />
+        <span style={{ width: pct(done), background: 'var(--forest)' }} />
+      </div>
+      <div className="dist-key">
+        <span>{todo} backlog</span>
+        <span>{active} active</span>
+        <span>{done} done</span>
+      </div>
+    </>
+  );
+}
+
+function ticketId(name: string, id: number) {
+  const prefix = name.replace(/[^a-zA-Z]/g, '').slice(0, 3).toUpperCase() || 'PRJ';
+  return `${prefix}-${String(id).padStart(3, '0')}`;
+}
+
+function countFor(board: BoardSummary, title: string) {
+  return board.columnCounts.find((c) => c.title === title)?.count ?? 0;
+}
+
+export default async function HomePage() {
+  const boards = await getBoardSummaries();
+  const inProgress = boards.filter((b) => b.status === 'in-progress');
+  const completed = boards.filter((b) => b.status === 'completed');
+
+  return (
+    <>
+      <header className="hero">
+        <div className="wrap">
+          <div className="eyebrow">THIS BOARD IS LIVE</div>
+          <h1>A live board of everything I&apos;m currently breaking and fixing.</h1>
+          <p>
+            This is how I actually track my work; broken into cards, moved across columns, and
+            marked done when it&apos;s genuinely done. Below is what I&apos;m actively building,
+            and what I&apos;ve already shipped.
           </p>
+          <div className="legend">
+            <div className="legend-item">
+              <span className="legend-swatch" style={{ background: 'var(--backlog)' }} />
+              Backlog
+            </div>
+            <div className="legend-item">
+              <span className="legend-swatch" style={{ background: 'var(--indigo)' }} />
+              In Progress
+            </div>
+            <div className="legend-item">
+              <span className="legend-swatch" style={{ background: 'var(--forest)' }} />
+              Done
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      <section>
+        <div className="wrap">
+          <div className="section-head">
+            <h2>In progress</h2>
+            <span className="count">{inProgress.length} active boards</span>
+          </div>
+          <p className="section-sub">
+            Currently pushing these forward — card counts pulled straight from each board&apos;s
+            columns.
+          </p>
+
+          <div className="progress-grid">
+            {inProgress.map((board) => (
+              <ProgressCardLink href={`/projects/${board.id}`} key={board.id}>
+                <div className="ticket-row">
+                  <span className="ticket-id">{ticketId(board.name, board.id)}</span>
+                  <span className="status-chip">IN PROGRESS</span>
+                </div>
+                <h3>{board.name}</h3>
+                <p>{board.description}</p>
+                <DistBar
+                  todo={countFor(board, 'To Do')}
+                  active={countFor(board, 'In Progress')}
+                  done={countFor(board, 'Done')}
+                />
+              </ProgressCardLink>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section>
+        <div className="wrap">
+          <div className="section-head">
+            <h2>Completed</h2>
+            <span className="count">{completed.length} shipped</span>
+          </div>
+          <p className="section-sub">Boards I&apos;ve closed out — live, deployed, and done.</p>
+
+          <div className="completed-grid">
+            {completed.map((board) => (
+              <div className="completed-card" key={board.id}>
+                
+                <img src={board.imageUrl ?? ''} alt={`${board.name} screenshot`} />
+                <div className="completed-body">
+                  <span className="completed-status">DONE</span>
+                  <h3>{board.name}</h3>
+                  <p>{board.description}</p>
+                  <a href={board.externalUrl ?? '#'} className="view-btn">
+                    View project →
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="wrap">
+        <footer>
+          <span>Built with Next.js, TypeScript &amp; MariaDB</span>
+          <span>© 2026</span>
+        </footer>
+      </div>
+    </>
   );
 }
