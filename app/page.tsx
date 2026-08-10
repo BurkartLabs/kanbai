@@ -44,9 +44,7 @@ export default async function HomePage() {
           <div className="eyebrow">THIS BOARD IS LIVE</div>
           <h1>A live board of everything I&apos;m currently breaking and fixing.</h1>
           <p>
-            This is how I actually track my work; broken into cards, moved across columns, and
-            marked done when it&apos;s genuinely done. Below is what I&apos;m actively building,
-            and what I&apos;ve already shipped.
+            I've always used Kanban boards to track my work. I figured, why not integrate this directly into my portfolio.
           </p>
           <div className="legend">
             <div className="legend-item">
@@ -72,8 +70,7 @@ export default async function HomePage() {
             <span className="count">{inProgress.length} active boards</span>
           </div>
           <p className="section-sub">
-            Currently pushing these forward — card counts pulled straight from each board&apos;s
-            columns.
+            This is what is currently in the works
           </p>
 
           <div className="progress-grid">
@@ -102,7 +99,7 @@ export default async function HomePage() {
             <h2>Completed</h2>
             <span className="count">{completed.length} shipped</span>
           </div>
-          <p className="section-sub">Boards I&apos;ve closed out — live, deployed, and done.</p>
+          <p className="section-sub">Boards I&apos;ve closed out</p>
 
           <div className="completed-grid">
             {completed.map((board) => (
@@ -125,7 +122,7 @@ export default async function HomePage() {
 
       <div className="wrap">
         <footer>
-          <span>Built with Next.js, TypeScript &amp; MariaDB</span>
+          <span>Built with Next.js, TypeScript &amp; MariaDB : Deployed on Vercel : DB Hosted on TiDB</span>
           <span>© 2026</span>
         </footer>
       </div>

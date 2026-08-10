@@ -15,10 +15,12 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (hasCookie && isLogin) {
-    return NextResponse.redirect(new URL('/manage', request.url));
-  }
-
+  // Deliberately do NOT redirect /manage/login → /manage when a cookie is
+  // present: the proxy runs on the edge and can't verify the session against
+  // MariaDB. If the cookie is stale, verifySession() on /manage would bounce
+  // back to /manage/login, and this branch would bounce it right back — a
+  // classic redirect loop. The login page's optionalSession() check handles
+  // the "already signed in" case with a real DB lookup.
   return NextResponse.next();
 }
 

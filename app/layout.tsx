@@ -25,8 +25,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Kanbai — Project Board',
-  description: 'An AI-powered kanban board that turns a prompt into a full project backlog.',
+  title: 'Burkart.dev : Project Board',
+  description: 'A personal kanban board showing the development status of my various projects',
 };
 const noFlashScript = `
 (function () {

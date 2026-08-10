@@ -12,7 +12,7 @@ export function SiteNav() {
       <nav>
         <div className="logo">
           <span className="dot" />
-          Kanbai
+          Burkart.dev
         </div>
         <div className="nav-links">
           <a href="#">About</a>
