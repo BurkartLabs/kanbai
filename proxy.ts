@@ -1,16 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-/**
- * Optimistic auth gate for /manage.
- *
- * This only checks that a session cookie is *present* — it deliberately does no
- * database work, since Proxy runs on every matched request including
- * prefetches. It is a UX redirect, not a security boundary: the real check is
- * `verifySession()` in lib/dal.ts, called by each protected page and action.
- *
- * Kept self-contained (no shared imports) per the Proxy docs.
- */
+
 const SESSION_COOKIE = 'kanbai_session';
 
 export function proxy(request: NextRequest) {
