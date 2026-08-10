@@ -122,7 +122,7 @@ export default async function HomePage() {
 
       <div className="wrap">
         <footer>
-          <span>Built with Next.js, TypeScript &amp; MariaDB : Deployed on Vercel : DB Hosted on TiDB</span>
+          <span>Built with Next.js & TypeScript : Deployed on Vercel : DB Hosted on TiDB</span>
           <span>© 2026</span>
         </footer>
       </div>
