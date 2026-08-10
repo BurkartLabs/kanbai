@@ -1,10 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Emits .next/standalone with a self-contained server.js and only the
-  // node_modules actually reachable at runtime. Much smaller to ship to the
-  // VPS, and it means production doesn't need a full `npm install`.
-  output: "standalone",
+  // Note: no `output: "standalone"`. That's for self-hosting, where you copy
+  // .next/standalone and run server.js yourself. Vercel produces its own
+  // output format, so setting it there is at best redundant.
 };
 
 export default nextConfig;
