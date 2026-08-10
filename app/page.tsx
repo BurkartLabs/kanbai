@@ -42,7 +42,8 @@ export default async function HomePage() {
       <header className="hero">
         <div className="wrap">
           <div className="eyebrow">THIS BOARD IS LIVE</div>
-          <h1>A live board of everything I&apos;m currently breaking and fixing.</h1>
+          <h1>Hi, I'm Paul Burkart.</h1>
+          <h1>This is a live board of everything I&apos;m currently breaking and fixing.</h1>
           <p>
             I've always used Kanban boards to track my work. I figured, why not integrate this directly into my portfolio.
           </p>
