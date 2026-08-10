@@ -16,6 +16,7 @@ export function SiteNav() {
         </div>
         <div className="nav-links">
           <a href="https://paulburkart.ca">About</a>
+          <a href="https://burkart.blog">Blog</a>
           <a href="https://www.linkedin.com/in/paul-b-635257127/">Resume</a>
           <a href="mailto:paul@paulburkart.ca" className="nav-cta">
             Get in touch
