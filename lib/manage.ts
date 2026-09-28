@@ -10,6 +10,10 @@ export type ProjectInput = {
   description: string | null;
   imageUrl: string | null;
   externalUrl: string | null;
+  repoUrl: string | null;
+  adoSlug: string | null;
+  featured: boolean;
+  sortOrder: number;
 };
 
 export type CardInput = {
@@ -52,8 +56,17 @@ async function assertColumnAllowed(projectId: number, columnId: number): Promise
 export async function createProject(input: ProjectInput): Promise<number> {
   await verifySession();
   const [res] = await pool.query<ResultSetHeader>(
-    'INSERT INTO projects (name, description, image_url, external_url) VALUES (?, ?, ?, ?)',
-    [input.name, input.description, input.imageUrl, input.externalUrl]
+    'INSERT INTO projects (name, description, image_url, external_url, repo_url, ado_slug, featured, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    [
+      input.name,
+      input.description,
+      input.imageUrl,
+      input.externalUrl,
+      input.repoUrl,
+      input.adoSlug,
+      input.featured ? 1 : 0,
+      input.sortOrder,
+    ]
   );
   return res.insertId;
 }
@@ -62,8 +75,18 @@ export async function updateProject(id: number, input: ProjectInput): Promise<vo
   await verifySession();
   if (id === SENTINEL) throw new Error('Cannot modify the system project.');
   await pool.query(
-    'UPDATE projects SET name = ?, description = ?, image_url = ?, external_url = ? WHERE id = ? AND id != 0',
-    [input.name, input.description, input.imageUrl, input.externalUrl, id]
+    'UPDATE projects SET name = ?, description = ?, image_url = ?, external_url = ?, repo_url = ?, ado_slug = ?, featured = ?, sort_order = ? WHERE id = ? AND id != 0',
+    [
+      input.name,
+      input.description,
+      input.imageUrl,
+      input.externalUrl,
+      input.repoUrl,
+      input.adoSlug,
+      input.featured ? 1 : 0,
+      input.sortOrder,
+      id,
+    ]
   );
 }
 

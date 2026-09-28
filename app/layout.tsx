@@ -4,7 +4,6 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import { ThemeInitScript } from '@/components/ThemeInitScript';
 import { SiteNav } from '@/components/SiteNav';
 import './globals.css';
-import Script from 'next/script';
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -28,19 +27,6 @@ export const metadata: Metadata = {
   title: 'Burkart.dev : Project Board',
   description: 'A personal kanban board showing the development status of my various projects',
 };
-const noFlashScript = `
-(function () {
-  try {
-    var stored = window.localStorage.getItem('kanbai-theme');
-    var theme = stored === 'light' || stored === 'dark'
-      ? stored
-      : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', theme);
-  } catch (e) {
-    document.documentElement.setAttribute('data-theme', 'light');
-  }
-})();
-`;
 
 export default function RootLayout({
   children,

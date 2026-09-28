@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { createProjectAction, deleteProjectAction, updateProjectAction } from './actions';
 import { ActionForm, DangerButton, Submit } from './ui';
-import { ProjectFields } from './ProjectFields';
+import { ProjectFields, type TrackerProduct } from './ProjectFields';
 import { Dialog } from './Dialog';
 
 export type ProjectRow = {
@@ -13,15 +13,26 @@ export type ProjectRow = {
   description: string | null;
   imageUrl: string | null;
   externalUrl: string | null;
+  repoUrl: string | null;
+  adoSlug: string | null;
+  featured: boolean;
+  sortOrder: number;
   status: 'in-progress' | 'completed';
   cardCount: number;
 };
 
-export function ProjectsPanel({ projects }: { projects: ProjectRow[] }) {
+export function ProjectsPanel({
+  projects,
+  products,
+}: {
+  projects: ProjectRow[];
+  products: TrackerProduct[];
+}) {
   const [creating, setCreating] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
   const editing = projects.find((p) => p.id === editingId) ?? null;
+  const stageOf = (slug: string | null) => products.find((p) => p.slug === slug)?.stage ?? null;
 
   return (
     <section className="manage-section">
@@ -53,9 +64,17 @@ export function ProjectsPanel({ projects }: { projects: ProjectRow[] }) {
                   <span className="manage-row-count">
                     {project.cardCount} {project.cardCount === 1 ? 'card' : 'cards'}
                   </span>
-                  <span className={`manage-badge manage-badge-${project.status}`}>
-                    {project.status === 'completed' ? 'Completed' : 'In progress'}
-                  </span>
+                  {project.featured && <span className="manage-badge manage-badge-featured">Featured</span>}
+                  {project.adoSlug ? (
+                    <span className="manage-badge manage-badge-linked" title="Progress comes from the tracker">
+                      {project.adoSlug}
+                      {stageOf(project.adoSlug) ? ` · ${stageOf(project.adoSlug)}` : ''}
+                    </span>
+                  ) : (
+                    <span className={`manage-badge manage-badge-${project.status}`}>
+                      {project.status === 'completed' ? 'Completed' : 'In progress'}
+                    </span>
+                  )}
                 </span>
               </button>
             </li>
@@ -70,7 +89,7 @@ export function ProjectsPanel({ projects }: { projects: ProjectRow[] }) {
           resetOnSuccess
           onSuccess={() => setCreating(false)}
         >
-          <ProjectFields />
+          <ProjectFields products={products} />
           <div className="manage-dialog-foot">
             <button type="button" className="manage-logout" onClick={() => setCreating(false)}>
               Cancel
@@ -95,7 +114,12 @@ export function ProjectsPanel({ projects }: { projects: ProjectRow[] }) {
                   description: editing.description,
                   imageUrl: editing.imageUrl,
                   externalUrl: editing.externalUrl,
+                  repoUrl: editing.repoUrl,
+                  adoSlug: editing.adoSlug,
+                  featured: editing.featured,
+                  sortOrder: editing.sortOrder,
                 }}
+                products={products}
                 key={editing.id}
               />
               <div className="manage-dialog-foot">

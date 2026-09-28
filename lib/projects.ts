@@ -7,6 +7,10 @@ interface ProjectRow extends RowDataPacket {
   description: string | null;
   image_url: string | null;
   external_url: string | null;
+  repo_url: string | null;
+  ado_slug: string | null;
+  featured: number;
+  sort_order: number;
 }
 
 interface ColumnRow extends RowDataPacket {
@@ -33,6 +37,11 @@ export type BoardSummary = {
   description: string | null;
   imageUrl: string | null;
   externalUrl: string | null;
+  repoUrl: string | null;
+  /** The tracker product this board mirrors, or null when the cards here are the whole story. */
+  adoSlug: string | null;
+  featured: boolean;
+  sortOrder: number;
   status: BoardStatus;
   columnCounts: { title: string; count: number }[];
 };
@@ -59,9 +68,11 @@ export type Board = {
   columns: BoardColumn[];
 };
 
+const PROJECT_FIELDS = 'id, name, description, image_url, external_url, repo_url, ado_slug, featured, sort_order';
+
 export async function getBoardSummaries(): Promise<BoardSummary[]> {
   const [projects] = await pool.query<ProjectRow[]>(
-    'SELECT id, name, description, image_url, external_url FROM projects WHERE id != 0 ORDER BY id'
+    `SELECT ${PROJECT_FIELDS} FROM projects WHERE id != 0 ORDER BY sort_order, id`
   );
 
   const [defaultColumns] = await pool.query<ColumnRow[]>(
@@ -99,6 +110,10 @@ export async function getBoardSummaries(): Promise<BoardSummary[]> {
       description: project.description,
       imageUrl: project.image_url,
       externalUrl: project.external_url,
+      repoUrl: project.repo_url,
+      adoSlug: project.ado_slug,
+      featured: Boolean(project.featured),
+      sortOrder: project.sort_order,
       status: isCompleted ? 'completed' : 'in-progress',
       columnCounts,
     });
@@ -111,7 +126,7 @@ export async function getBoardById(id: number): Promise<Board | null> {
   if (!Number.isFinite(id) || id <= 0) return null;
 
   const [projects] = await pool.query<ProjectRow[]>(
-    'SELECT id, name, description, image_url, external_url FROM projects WHERE id = ? LIMIT 1',
+    `SELECT ${PROJECT_FIELDS} FROM projects WHERE id = ? LIMIT 1`,
     [id]
   );
   const project = projects[0];

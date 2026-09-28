@@ -1,5 +1,6 @@
 import { verifySession } from '@/lib/dal';
 import { getBoardSummaries } from '@/lib/projects';
+import { adoConfigured, getProducts } from '@/lib/ado';
 import { logout } from './actions';
 import { ProjectsPanel, type ProjectRow } from './ProjectsPanel';
 
@@ -7,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function ManagePage() {
   const session = await verifySession();
-  const boards = await getBoardSummaries();
+  const [boards, trackerProducts] = await Promise.all([getBoardSummaries(), getProducts()]);
 
   const projects: ProjectRow[] = boards.map((b) => ({
     id: b.id,
@@ -15,6 +16,10 @@ export default async function ManagePage() {
     description: b.description,
     imageUrl: b.imageUrl,
     externalUrl: b.externalUrl,
+    repoUrl: b.repoUrl,
+    adoSlug: b.adoSlug,
+    featured: b.featured,
+    sortOrder: b.sortOrder,
     status: b.status,
     cardCount: b.columnCounts.reduce((n, c) => n + c.count, 0),
   }));
@@ -46,6 +51,10 @@ export default async function ManagePage() {
           <span className="manage-stat-value">{projects.length}</span>
         </div>
         <div className="manage-stat">
+          <span className="manage-stat-label">Tracker</span>
+          <span className="manage-stat-value manage-stat-small">{adoConfigured() ? `${trackerProducts.length} products` : 'not configured'}</span>
+        </div>
+        <div className="manage-stat">
           <span className="manage-stat-label">Cards</span>
           <span className="manage-stat-value">{totalCards}</span>
         </div>
@@ -57,7 +66,7 @@ export default async function ManagePage() {
         </div>
       </div>
 
-      <ProjectsPanel projects={projects} />
+      <ProjectsPanel projects={projects} products={trackerProducts.map((p) => ({ slug: p.slug, stage: p.stage }))} />
     </div>
   );
 }

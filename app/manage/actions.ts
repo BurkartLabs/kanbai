@@ -132,12 +132,34 @@ function message(err: unknown): string {
   return 'Something went wrong. Please try again.';
 }
 
+/** A tracker product slug: what follows `product:` on its epic. Lowercase, digits and hyphens only. */
+function optionalSlug(fd: FormData, name: string, label: string): string | null {
+  const value = optional(fd, name, label, 64);
+  if (value === null) return null;
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(value)) {
+    throw new Invalid(`${label} must be a slug: lowercase letters, digits and hyphens.`);
+  }
+  return value;
+}
+
+function smallInt(fd: FormData, name: string, label: string): number {
+  const raw = String(fd.get(name) ?? '').trim();
+  if (!raw) return 0;
+  const n = Number(raw);
+  if (!Number.isInteger(n) || Math.abs(n) > 9999) throw new Invalid(`${label} must be a whole number.`);
+  return n;
+}
+
 function projectFields(fd: FormData) {
   return {
     name: required(fd, 'name', 'Name', 255),
     description: optional(fd, 'description', 'Description', 5000),
     imageUrl: optionalUrl(fd, 'imageUrl', 'Image URL'),
     externalUrl: optionalUrl(fd, 'externalUrl', 'Project URL'),
+    repoUrl: optionalUrl(fd, 'repoUrl', 'Repository URL'),
+    adoSlug: optionalSlug(fd, 'adoSlug', 'Tracker product'),
+    featured: fd.get('featured') === 'on',
+    sortOrder: smallInt(fd, 'sortOrder', 'Sort order'),
   };
 }
 
