@@ -160,6 +160,7 @@ function projectFields(fd: FormData) {
     adoSlug: optionalSlug(fd, 'adoSlug', 'Tracker product'),
     featured: fd.get('featured') === 'on',
     sortOrder: smallInt(fd, 'sortOrder', 'Sort order'),
+    completed: fd.get('completed') === 'on',
   };
 }
 

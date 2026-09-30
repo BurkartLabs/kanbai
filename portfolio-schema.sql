@@ -12,9 +12,12 @@
 --               0 = a compact row.
 --   sort_order  position on the public page, lowest first; ties by id.
 --   repo_url    optional source link shown next to the project link.
+--   completed   1 = marked done by hand. Overrides the tracker stage and the cards: the
+--               project sits under Completed whatever those say.
 -- ============================================================
 
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS ado_slug VARCHAR(64) NULL;
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS featured TINYINT(1) NOT NULL DEFAULT 0;
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS sort_order INT NOT NULL DEFAULT 0;
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS repo_url VARCHAR(500) NULL;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS completed TINYINT(1) NOT NULL DEFAULT 0;
