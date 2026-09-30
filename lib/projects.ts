@@ -11,7 +11,7 @@ interface ProjectRow extends RowDataPacket {
   ado_slug: string | null;
   featured: number;
   sort_order: number;
-  completed: number;
+  is_completed: number;
 }
 
 interface ColumnRow extends RowDataPacket {
@@ -71,7 +71,7 @@ export type Board = {
   columns: BoardColumn[];
 };
 
-const PROJECT_FIELDS = 'id, name, description, image_url, external_url, repo_url, ado_slug, featured, sort_order, completed';
+const PROJECT_FIELDS = 'id, name, description, image_url, external_url, repo_url, ado_slug, featured, sort_order, is_completed';
 
 export async function getBoardSummaries(): Promise<BoardSummary[]> {
   const [projects] = await pool.query<ProjectRow[]>(
@@ -103,7 +103,7 @@ export async function getBoardSummaries(): Promise<BoardSummary[]> {
     }));
 
     const isCompleted =
-      Boolean(project.completed) ||
+      Boolean(project.is_completed) ||
       (cards.length > 0 &&
       doneColumn !== undefined &&
       cards.every((card) => card.column_id === doneColumn.id));
@@ -118,7 +118,7 @@ export async function getBoardSummaries(): Promise<BoardSummary[]> {
       adoSlug: project.ado_slug,
       featured: Boolean(project.featured),
       sortOrder: project.sort_order,
-      markedComplete: Boolean(project.completed),
+      markedComplete: Boolean(project.is_completed),
       status: isCompleted ? 'completed' : 'in-progress',
       columnCounts,
     });
