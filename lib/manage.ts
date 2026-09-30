@@ -57,7 +57,7 @@ async function assertColumnAllowed(projectId: number, columnId: number): Promise
 export async function createProject(input: ProjectInput): Promise<number> {
   await verifySession();
   const [res] = await pool.query<ResultSetHeader>(
-    'INSERT INTO projects (name, description, image_url, external_url, repo_url, ado_slug, featured, sort_order, completed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO projects (name, description, image_url, external_url, repo_url, ado_slug, featured, sort_order, is_completed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
     [
       input.name,
       input.description,
@@ -77,7 +77,7 @@ export async function updateProject(id: number, input: ProjectInput): Promise<vo
   await verifySession();
   if (id === SENTINEL) throw new Error('Cannot modify the system project.');
   await pool.query(
-    'UPDATE projects SET name = ?, description = ?, image_url = ?, external_url = ?, repo_url = ?, ado_slug = ?, featured = ?, sort_order = ?, completed = ? WHERE id = ? AND id != 0',
+    'UPDATE projects SET name = ?, description = ?, image_url = ?, external_url = ?, repo_url = ?, ado_slug = ?, featured = ?, sort_order = ?, is_completed = ? WHERE id = ? AND id != 0',
     [
       input.name,
       input.description,
