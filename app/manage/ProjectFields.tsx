@@ -9,6 +9,7 @@ export type ProjectValues = {
   adoSlug?: string | null;
   featured?: boolean;
   sortOrder?: number;
+  completed?: boolean;
 };
 
 export type TrackerProduct = { slug: string; stage: string };
@@ -91,6 +92,11 @@ export function ProjectFields({
             ))}
           </datalist>
         )}
+      </label>
+
+      <label className="manage-field manage-field-check">
+        <input name="completed" type="checkbox" defaultChecked={values.completed ?? false} />
+        <span>Completed: move to Completed, overriding the tracker stage and cards</span>
       </label>
 
       <div className="manage-grid-2">

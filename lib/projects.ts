@@ -11,6 +11,7 @@ interface ProjectRow extends RowDataPacket {
   ado_slug: string | null;
   featured: number;
   sort_order: number;
+  completed: number;
 }
 
 interface ColumnRow extends RowDataPacket {
@@ -42,6 +43,8 @@ export type BoardSummary = {
   adoSlug: string | null;
   featured: boolean;
   sortOrder: number;
+  /** Set by hand in /manage. Overrides the tracker stage and the card columns. */
+  markedComplete: boolean;
   status: BoardStatus;
   columnCounts: { title: string; count: number }[];
 };
@@ -68,7 +71,7 @@ export type Board = {
   columns: BoardColumn[];
 };
 
-const PROJECT_FIELDS = 'id, name, description, image_url, external_url, repo_url, ado_slug, featured, sort_order';
+const PROJECT_FIELDS = 'id, name, description, image_url, external_url, repo_url, ado_slug, featured, sort_order, completed';
 
 export async function getBoardSummaries(): Promise<BoardSummary[]> {
   const [projects] = await pool.query<ProjectRow[]>(
@@ -100,9 +103,10 @@ export async function getBoardSummaries(): Promise<BoardSummary[]> {
     }));
 
     const isCompleted =
-      cards.length > 0 &&
+      Boolean(project.completed) ||
+      (cards.length > 0 &&
       doneColumn !== undefined &&
-      cards.every((card) => card.column_id === doneColumn.id);
+      cards.every((card) => card.column_id === doneColumn.id));
 
     summaries.push({
       id: project.id,
@@ -114,6 +118,7 @@ export async function getBoardSummaries(): Promise<BoardSummary[]> {
       adoSlug: project.ado_slug,
       featured: Boolean(project.featured),
       sortOrder: project.sort_order,
+      markedComplete: Boolean(project.completed),
       status: isCompleted ? 'completed' : 'in-progress',
       columnCounts,
     });

@@ -82,7 +82,9 @@ export default async function HomePage() {
   // Which projects appear is decided in /manage, by adding them. A linked project whose progress did
   // not come through (tracker unreachable, or not configured) falls back to its own cards.
   const visible = entries;
-  const isShipped = (e: Entry) => (e.snapshot ? e.snapshot.stage === 'Live' : e.board.status === 'completed');
+  // A project marked complete by hand in /manage wins over the tracker stage and the cards.
+  const isShipped = (e: Entry) =>
+    e.board.markedComplete || (e.snapshot ? e.snapshot.stage === 'Live' : e.board.status === 'completed');
   const active = visible.filter((e) => !isShipped(e));
   const shipped = visible.filter(isShipped);
   const featured = active.filter((e) => e.board.featured && e.snapshot !== null);

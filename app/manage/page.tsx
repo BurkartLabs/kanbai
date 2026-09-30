@@ -20,6 +20,7 @@ export default async function ManagePage() {
     adoSlug: b.adoSlug,
     featured: b.featured,
     sortOrder: b.sortOrder,
+    completed: b.markedComplete,
     status: b.status,
     cardCount: b.columnCounts.reduce((n, c) => n + c.count, 0),
   }));

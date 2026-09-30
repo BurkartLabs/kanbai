@@ -17,6 +17,7 @@ export type ProjectRow = {
   adoSlug: string | null;
   featured: boolean;
   sortOrder: number;
+  completed: boolean;
   status: 'in-progress' | 'completed';
   cardCount: number;
 };
@@ -118,6 +119,7 @@ export function ProjectsPanel({
                   adoSlug: editing.adoSlug,
                   featured: editing.featured,
                   sortOrder: editing.sortOrder,
+                  completed: editing.completed,
                 }}
                 products={products}
                 key={editing.id}
