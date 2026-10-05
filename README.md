@@ -100,4 +100,8 @@ MySQL/MariaDB through `mysql2`. Tests use Node's built-in test runner.
 
 Early (version 0.1.0) and built for one owner's portfolio rather than as a general product. The tracker integration
 assumes a particular Azure DevOps tagging convention (see `lib/ado.ts`), and the production database schema is not
-included beyond what the demo needs. No licence file is included in this repository.
+included beyond what the demo needs.
+
+## Licence
+
+All rights reserved. The source is public to read, not to reuse: see [LICENSE](LICENSE).
